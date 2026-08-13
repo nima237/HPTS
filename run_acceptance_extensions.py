@@ -1,11 +1,3 @@
-"""Pre-specified acceptance-strengthening diagnostics for the final HPTS study.
-
-All model selection uses data ending on 2023-12-31.  Calendar 2024 onward is
-only used once for evaluation.  The script adds: (1) an exploratory economic-
-value diagnostic, (2) a pooled nonlinear benchmark, (3) stale/permuted-DVOL
-placebos, and (4) block ablations plus coefficient summaries.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -124,9 +116,6 @@ def make_permuted(df: pd.DataFrame):
     names = [f"perm_{c}" for c in pure] + ["perm_iv_rv_gap_open"]
     for name in names:
         work[name] = np.nan
-    # A common permutation is applied to the complete public-DVOL state within
-    # each locked split. This preserves within-block relationships and the
-    # cross-asset equality of DVOL while breaking its chronological alignment.
     for split, idx in work.groupby("split").groups.items():
         part = work.loc[idx, ["timestamp", *pure]].drop_duplicates("timestamp").sort_values("timestamp")
         source = np.arange(len(part))
@@ -201,7 +190,6 @@ def block_analysis(df: pd.DataFrame, base: pd.DataFrame):
     out = pd.DataFrame(rows)
     out.to_csv(OUT / "block_ablation_results.csv", index=False)
 
-    # Standardised coefficient magnitudes over every expanding-window refit.
     coef_rows = []
     dates = np.array(sorted(df[df.timestamp >= "2024-01-01"].timestamp.unique()))
     hp = {"alpha": 100.0, "pool": 10.0}

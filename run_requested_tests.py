@@ -1,5 +1,3 @@
-"""Leakage-safe requested robustness tests, isolated from the final package."""
-
 from __future__ import annotations
 
 import argparse

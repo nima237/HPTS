@@ -1,24 +1,3 @@
-"""Final leakage-safe HPTS forecasting pipeline.
-
-Primary estimand
------------------
-The target ``y`` is log realised variance over the exact next 24 hours:
-``log(sum of squared hourly log returns)``.  The phrase realised volatility is
-reserved for ``sqrt(exp(y))``.  The primary loss is squared error on log
-realised variance; QLIKE and raw-volatility losses are diagnostics.
-
-Protocol
---------
-Training is before 2023, hyperparameters are selected on calendar 2023, and
-the untouched holdout begins on 2024-01-01.  Every option feature is based on
-the current UTC day's DVOL open; same-day close/high/low values are absent.
-
-The proposed model is one hierarchical ridge regression, not an ensemble.  It
-contains common slopes, asset fixed effects, and shrunken asset-specific slope
-deviations.  The final specification omits the BTC--ETH IV spread because that
-choice improved the pre-holdout validation loss.
-"""
-
 from __future__ import annotations
 
 from hashlib import sha256
@@ -53,7 +32,7 @@ HAR = ["c_logrv_6", "c_logrv_24", "c_logrv_72", "c_logrv_168"]
 IV_BTC = ["log_dvol_open", "dvol_chg_1_open", "dvol_chg_5_open", "iv_rv_gap_open"]
 IV_ETH = ["log_dvol_eth_open", "dvol_eth_chg_1_open"]
 IV_SPREAD = ["iv_spread_open"]
-IV = IV_BTC + IV_ETH                         # final, validation-selected IV block
+IV = IV_BTC + IV_ETH
 XSEC = [
     "c_xs_logrv24", "c_xs_logrv24_rank", "c_xs_dispersion", "c_xs_breadth",
     "c_beta_mkt_168", "c_corr_mkt_168", "c_resid_ret_24", "c_mkt_ret_24",
@@ -293,8 +272,6 @@ def build_predictions(df: pd.DataFrame):
                         "validation_mse": float(grid.iloc[0].validation_mse)})
         predictions.append(rolling_per_asset(df, features, name, params={"alpha": alpha}))
 
-    # Extra nonlinear/sparse competitors use the validation-selected settings
-    # from the locked pre-holdout audit.
     predictions.append(rolling_per_asset(
         df, FULL, "ElasticNet", kind="elasticnet", params={"alpha": 0.1, "l1_ratio": 0.1}
     ))
@@ -633,7 +610,6 @@ def main():
 
 
 def finalize_from_saved_results():
-    """Finish figures/report after a presentation-layer interruption."""
     OUT.mkdir(parents=True, exist_ok=True)
     FIG.mkdir(parents=True, exist_ok=True)
     df = load_and_audit()
