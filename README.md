@@ -51,6 +51,11 @@ python run_final_analysis.py
 python run_requested_tests.py all
 ```
 
+The distributed `model_data.csv` already includes the one-, three- and seven-day
+targets used by the published analyses. If those columns are removed and must be
+rebuilt from an hourly panel, set `HPTS_RAW_PANEL` to a compatible
+`panel_hourly.parquet` file before running the horizon tests.
+
 The script recreates `final_results/`. The notebook contains the same pipeline
 and can be run from this directory. A complete run includes 17 leave-one-asset-
 out refits and can take several minutes.

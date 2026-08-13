@@ -28,7 +28,7 @@ warnings.filterwarnings("ignore")
 
 SEED = 77
 REPS = 1000
-RAW_PANEL = Path(r"D:\Thesis\03\crypto\data\panel_hourly.parquet")
+RAW_PANEL = Path(os.environ.get("HPTS_RAW_PANEL", "panel_hourly.parquet"))
 PURE_IV = [
     "log_dvol_open", "dvol_chg_1_open", "dvol_chg_5_open",
     "log_dvol_eth_open", "dvol_eth_chg_1_open",
@@ -291,6 +291,11 @@ def horizon_data(days):
         df = df.drop(columns="y").rename(columns={target: "y"})
     else:
         col = {3: "c_logrv_72", 7: "c_logrv_168"}[days]
+        if not RAW_PANEL.exists():
+            raise FileNotFoundError(
+                f"{target} is absent from model_data.csv and the optional raw panel was not found at "
+                f"{RAW_PANEL}. Set HPTS_RAW_PANEL to a compatible panel_hourly.parquet file."
+            )
         raw = pd.read_parquet(RAW_PANEL, columns=["timestamp", "symbol", col])
         future = raw[raw.timestamp.dt.hour.eq(0)][["timestamp", "symbol", col]].copy()
         future["timestamp"] -= pd.Timedelta(days=days)
