@@ -1,0 +1,35 @@
+column,dtype,missing_count,description
+timestamp,datetime64[ns],0,UTC forecast origin; every row uses information observable at this time.
+symbol,str,0,Cryptocurrency USDT pair.
+split,str,0,"Fixed train (<2023), validation (2023), or untouched holdout (>=2024)."
+y,float32,0,Target: log realised variance over the next exact 24 hours (log sum of squared hourly log returns).
+ret_24,float64,0,Log spot return over the trailing 24 hours; used by GARCH baselines.
+c_logrv_6,float32,0,Causal log realised-variance HAR input: 6 trailing hours.
+c_logrv_24,float32,0,Causal log realised-variance HAR input: 24 trailing hours.
+c_logrv_72,float32,0,Causal log realised-variance HAR input: 72 trailing hours.
+c_logrv_168,float32,0,Causal log realised-variance HAR input: 168 trailing hours.
+log_dvol_open,float64,0,Option-implied feature built from the current UTC day's DVOL open; causal at the origin.
+dvol_chg_1_open,float64,0,Option-implied feature built from the current UTC day's DVOL open; causal at the origin.
+dvol_chg_5_open,float64,0,Option-implied feature built from the current UTC day's DVOL open; causal at the origin.
+iv_rv_gap_open,float64,0,Option-implied feature built from the current UTC day's DVOL open; causal at the origin.
+log_dvol_eth_open,float64,0,Option-implied feature built from the current UTC day's DVOL open; causal at the origin.
+dvol_eth_chg_1_open,float64,0,Option-implied feature built from the current UTC day's DVOL open; causal at the origin.
+iv_spread_open,float64,0,Option-implied feature built from the current UTC day's DVOL open; causal at the origin.
+c_xs_logrv24,float32,0,Causal cross-sectional market-state feature computed from trailing spot information.
+c_xs_logrv24_rank,float32,0,Causal cross-sectional market-state feature computed from trailing spot information.
+c_xs_dispersion,float32,0,Causal cross-sectional market-state feature computed from trailing spot information.
+c_xs_breadth,float32,0,Causal cross-sectional market-state feature computed from trailing spot information.
+c_beta_mkt_168,float32,0,Causal cross-sectional market-state feature computed from trailing spot information.
+c_corr_mkt_168,float32,0,Causal cross-sectional market-state feature computed from trailing spot information.
+c_resid_ret_24,float32,0,Causal cross-sectional market-state feature computed from trailing spot information.
+c_mkt_ret_24,float32,0,Causal cross-sectional market-state feature computed from trailing spot information.
+c_signed_jump_24,float32,0,Causal trailing tail/path/liquidity feature.
+c_jump_asym_24,float32,0,Causal trailing tail/path/liquidity feature.
+c_jump_share_24,float32,0,Causal trailing tail/path/liquidity feature.
+c_vol_ratio_6_72,float32,0,Causal trailing tail/path/liquidity feature.
+c_vol_ratio_24_168,float32,0,Causal trailing tail/path/liquidity feature.
+c_path_eff_24,float32,0,Causal trailing tail/path/liquidity feature.
+c_range_rel,float32,0,Causal trailing tail/path/liquidity feature.
+c_amihud_24,float32,0,Causal trailing tail/path/liquidity feature.
+y_3d,float64,34,Log realised variance over the exact next 72 hours; supportive multi-horizon target.
+y_7d,float64,102,Log realised variance over the exact next 168 hours; supportive multi-horizon target.

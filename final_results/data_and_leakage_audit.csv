@@ -1,0 +1,10 @@
+check,value,status
+target_definition,log(sum of squared hourly log returns over next exact 24h),pass
+row_count,31965,pass
+asset_count,17,pass
+date_min,2021-03-29,pass
+date_max,2026-06-29,pass
+missing_model_values,0,pass
+duplicate_asset_dates,0,pass
+forbidden_same_day_dvol_close_high_low,0,pass
+model_data_sha256,e801ea0df38a6e2784fc58677c098f89a44f734f305a451500d3ff1ccde6ccee,pass

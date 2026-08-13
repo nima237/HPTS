@@ -1,0 +1,12 @@
+model,alpha,pool,validation_mse,l1_ratio,max_iter,learning_rate,max_leaf_nodes,l2_regularization
+Full_FixedEffects,100.0,1.0,0.7110134525326488,,,,,
+HPTS_CommonIV,100.0,10.0,0.7070788548151179,,,,,
+HPTS_IVSpecific,100.0,10.0,0.706647591920525,,,,,
+HPTS_Final,100.0,10.0,0.7055621185018794,,,,,
+HPTS_NoIV,10.0,30.0,0.7345889570679053,,,,,
+HAR,0.1,,0.7742909928932751,,,,,
+HAR_J,0.1,,0.7717627790203744,,,,,
+HAR_IV_PerAsset,100.0,,0.727119240698703,,,,,
+Full_PerAsset,100.0,,0.6983935944984625,,,,,
+ElasticNet,0.1,,,0.1,,,,
+HistGradientBoosting,,,,,200.0,0.03,7.0,1.0

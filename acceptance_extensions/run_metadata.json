@@ -1,0 +1,12 @@
+{
+  "seed": 77,
+  "holdout_start": "2024-01-01",
+  "nonlinear_hp": {
+    "max_iter": 150,
+    "learning_rate": 0.03,
+    "max_leaf_nodes": 7,
+    "min_samples_leaf": 40,
+    "l2_regularization": 3.0
+  },
+  "note": "All nonlinear tuning used calendar 2023; stale/permuted tests reuse pre-selected HPTS hyperparameters."
+}

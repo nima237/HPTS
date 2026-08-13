@@ -1,0 +1,13 @@
+{
+  "seed": 77,
+  "permutations": 1000,
+  "test": "locked-model joint-date permutation of the public IV state on the untouched holdout",
+  "observed_HPTS_Final_gain_vs_NoIV_pct": 2.1025928239339353,
+  "permuted_gain_vs_NoIV_mean_pct": -4.799660424198854,
+  "permuted_gain_vs_NoIV_q025_pct": -6.632360262650764,
+  "permuted_gain_vs_NoIV_q975_pct": -2.898758044191367,
+  "permutation_p_one_sided": 0.000999000999000999,
+  "current_gain_vs_permuted_mean_pct": 6.577937489895441,
+  "current_gain_vs_permuted_q025_pct": 4.860457949301051,
+  "current_gain_vs_permuted_q975_pct": 8.191653018877995
+}
