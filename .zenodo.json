@@ -1,0 +1,32 @@
+{
+  "title": "HPTS: hierarchical partially pooled forecasting of cryptocurrency realised variance",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "cc-by-4.0",
+  "description": "<p>Data and code for the article <em>Symmetry Breaking in Hierarchical Panel Forecasting: Transferring Bitcoin and Ether Option-Implied Information to Cryptocurrencies Without Listed Options</em>.</p><p>The study forecasts log realised variance over the exact next 24 hours for 17 USDT-denominated cryptocurrencies, 15 of which have no listed options, and asks whether the public BTC and ETH implied-volatility indices carry information that transfers across the panel. HPTS is a single ridge-regularised panel regression whose penalty makes cross-asset exchangeability an explicit, tunable restriction.</p><p>The repository contains the model-ready dataset of 31,965 asset-day observations, the variable dictionary, the full analysis pipeline, the result tables reported in the paper, and a compact notebook that reproduces the headline numbers in about fifteen seconds.</p>",
+  "creators": [
+    {
+      "name": "Heidari, Nima",
+      "affiliation": "Department of Industrial Engineering, Iran University of Science and Technology, Tehran, Iran"
+    },
+    {
+      "name": "Mirzamohammadi, Saeed",
+      "affiliation": "Department of Industrial Engineering, Iran University of Science and Technology, Tehran, Iran"
+    },
+    {
+      "name": "Amiri, Babak",
+      "affiliation": "Department of Industrial Engineering, Iran University of Science and Technology, Tehran, Iran"
+    }
+  ],
+  "keywords": [
+    "realised variance",
+    "implied volatility",
+    "cryptocurrency",
+    "hierarchical modelling",
+    "partial pooling",
+    "symmetry breaking",
+    "exchangeability",
+    "volatility forecasting"
+  ],
+  "language": "eng"
+}
