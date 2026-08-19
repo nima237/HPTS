@@ -147,13 +147,17 @@ def repeated_permutation():
     print(json.dumps(summary, indent=2), flush=True)
 
 
-def fractional_weights(d, length, threshold=1e-5):
-    w = [1.0]
-    for k in range(1, length):
-        w.append(-w[-1] * (d - k + 1) / k)
-        if k > 50 and abs(w[-1]) < threshold:
-            break
-    return np.asarray(w)
+FRAC_LAG = 200          # fixed truncation lag of the fractional filter
+
+
+def fractional_weights(d, length=FRAC_LAG):
+    """Truncated binomial expansion of (1-B)^d, fixed length so that the same
+    weight vector defines the transform and its inversion at every refit."""
+    w = np.empty(length + 1)
+    w[0] = 1.0
+    for k in range(1, length + 1):
+        w[k] = -w[k - 1] * (d - k + 1) / k
+    return w
 
 
 def gph_d(x):
@@ -186,24 +190,25 @@ def arma_asset(g, fractional=False):
             if refit:
                 history = np.asarray(raw_seen)
                 if fractional:
+                    if len(history) < 2 * FRAC_LAG:
+                        raise ValueError("history too short for a stable fractional filter")
                     d = gph_d(history)
-                    weights = fractional_weights(d, len(history))
-                    z = np.convolve(history, weights, mode="full")[:len(history)]
-                    z = z[len(weights) - 1:]
+                    weights = fractional_weights(d)
+                    # z[t] = sum_{k=0}^{FRAC_LAG} w[k] x[t-k], defined for t >= FRAC_LAG
+                    z = np.convolve(history, weights)[:len(history)][FRAC_LAG:]
                     fit = ARIMA(z, order=(1, 0, 1), trend="c").fit()
                 else:
                     fit = ARIMA(history, order=(1, 0, 1), trend="c").fit()
                 last_fit = i
             elif fractional:
-                recent = np.asarray(raw_seen[-len(weights):])[::-1]
-                znew = float(np.dot(weights[:len(recent)], recent))
-                fit = fit.append([znew], refit=False)
+                lag = np.asarray(raw_seen[-(FRAC_LAG + 1):])[::-1]
+                fit = fit.append([float(np.dot(weights[:len(lag)], lag))], refit=False)
             else:
                 fit = fit.append([x[i]], refit=False)
             fc = float(fit.forecast(1)[0])
             if fractional:
-                recent = np.asarray(raw_seen[-(len(weights) - 1):])[::-1]
-                fc -= float(np.dot(weights[1:len(recent) + 1], recent))
+                lag = np.asarray(raw_seen[-FRAC_LAG:])[::-1]
+                fc -= float(np.dot(weights[1:len(lag) + 1], lag))
         except Exception:
             fc = float(np.mean(raw_seen[-60:]))
             fit = None

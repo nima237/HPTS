@@ -1,0 +1,7 @@
+{
+  "seed": 77,
+  "permutations": 200,
+  "refits": 16,
+  "alpha": 100.0,
+  "pool": 10.0
+}

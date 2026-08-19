@@ -29,14 +29,17 @@ jupyter notebook HPTS_reproduce.ipynb
 | HPTS-Final vs HAR, 15 assets without options | 6.69% | 4.76 |
 
 It also reproduces the symmetry-breaking measurement (paper Table 6) and the validation path
-across the pooling multiplier (paper Table 7).
+across the pooling multiplier (paper Table 7). The permutation null that accompanies Table 6 is
+produced separately by `analysis_exchangeability.py`, which takes about half an hour for the
+200 draws reported in the paper.
 
 To regenerate every result in the paper:
 
 ```bash
-python analysis_main.py           # main pipeline, 11 models, Tables 2-15
-python analysis_benchmarks.py all # time-series baselines, 1/3/7-day horizons, permutation test
-python analysis_robustness.py     # DVOL placebos, block ablations, pooled nonlinear benchmark
+python analysis_main.py            # main pipeline, 11 models, Tables 2-15
+python analysis_benchmarks.py all  # time-series baselines, 1/3/7-day horizons, IV permutation test
+python analysis_robustness.py      # DVOL placebos, block ablations, pooled nonlinear benchmark
+python analysis_exchangeability.py # permutation test of cross-asset exchangeability, Table 6
 ```
 
 ---
@@ -90,6 +93,7 @@ spread is excluded because the no-spread specification had lower 2023 validation
 | `analysis_main.py` | Main pipeline |
 | `analysis_benchmarks.py` | Time-series baselines, multi-horizon targets, 1,000-draw permutation test |
 | `analysis_robustness.py` | Placebos, block ablations, pooled nonlinear benchmark |
+| `analysis_exchangeability.py` | Permutation test of cross-asset exchangeability |
 | `results/` | Paper tables, selected hyperparameters, holdout predictions, run metadata |
 | `results/benchmarks/` | Baseline, horizon and permutation outputs |
 | `results/robustness/` | Placebo, ablation and coefficient-summary outputs |
