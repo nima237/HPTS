@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+title: "HPTS: hierarchical partially pooled forecasting of cryptocurrency realised variance"
+message: "If you use this dataset or code, please cite the associated article."
+type: dataset
+authors:
+  - family-names: Heidari
+    given-names: Nima
+    affiliation: "Department of Industrial Engineering, Iran University of Science and Technology"
+    email: n_heidari@ind.iust.ac.ir
+  - family-names: Mirzamohammadi
+    given-names: Saeed
+    affiliation: "Department of Industrial Engineering, Iran University of Science and Technology"
+    email: mirzamohammadi@iust.ac.ir
+  - family-names: Amiri
+    given-names: Babak
+    affiliation: "Department of Industrial Engineering, Iran University of Science and Technology"
+    email: babakamiri@iust.ac.ir
+license: CC-BY-4.0
+repository-code: "https://github.com/nima237/HPTS"
+keywords:
+  - realised variance
+  - implied volatility
+  - cryptocurrency
+  - hierarchical modelling
+  - partial pooling
+  - symmetry breaking
+  - forecasting
+preferred-citation:
+  type: article
+  title: "Symmetry Breaking in Hierarchical Panel Forecasting: Transferring Bitcoin and Ether Option-Implied Information to Cryptocurrencies Without Listed Options"
+  authors:
+    - family-names: Heidari
+      given-names: Nima
+    - family-names: Mirzamohammadi
+      given-names: Saeed
+    - family-names: Amiri
+      given-names: Babak
+  year: 2026

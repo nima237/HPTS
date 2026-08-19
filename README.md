@@ -1,72 +1,124 @@
-# Final leakage-safe HPTS package
+# HPTS — hierarchical partially pooled forecasting of cryptocurrency realised variance
 
-This directory is the authoritative, standalone analysis package for the paper.
-The study forecasts **log realised variance** over the exact next 24 hours.
+Data and code for:
 
-## Authoritative files
+> **Symmetry Breaking in Hierarchical Panel Forecasting: Transferring Bitcoin and Ether
+> Option-Implied Information to Cryptocurrencies Without Listed Options**
+> Nima Heidari, Saeed Mirzamohammadi, Babak Amiri.
+> Department of Industrial Engineering, Iran University of Science and Technology.
 
-- `model_data.csv`: 31,965 model-ready asset-day observations for 17 assets.
-- `data_dictionary.csv`: corrected variable definitions and missing-value audit.
-- `run_final_analysis.py`: one-command final pipeline.
-- `FINAL_HPTS_analysis.ipynb`: complete runnable notebook containing the primary and added analyses.
-- `run_requested_tests.py`: Hoang-Baur baselines, 1/3/7-day horizons, and 1,000-draw IV permutation test.
-- `requested_tests/`: saved predictions and numerical results for the added analyses.
-- `FINAL_RESULTS.md`: concise interpretation of the locked results.
-- `final_results/`: paper tables, supplementary checks, predictions, metadata and figures.
-- `requirements.txt`: required Python packages.
+The study forecasts **log realised variance over the exact next 24 hours** for 17
+USDT-denominated cryptocurrencies, 15 of which have no listed options, and asks whether the
+public BTC and ETH implied-volatility indices carry information that transfers across the panel.
 
-Older files in this directory are retained only for traceability. For the paper,
-use `FINAL_HPTS_analysis.ipynb`, `run_final_analysis.py`, `FINAL_RESULTS.md`, and
-`final_results/`.
+---
+
+## Quick start
+
+```bash
+pip install -r requirements.txt
+jupyter notebook HPTS_reproduce.ipynb
+```
+
+`HPTS_reproduce.ipynb` runs in about 15 seconds and reproduces the headline numbers:
+
+| Comparison | Gain | Newey–West t |
+|---|---|---|
+| HPTS-Final vs per-asset HAR | 6.99% | 5.16 |
+| HPTS-Final vs HPTS-NoIV (option increment) | 2.10% | 2.44 |
+| HPTS-Final vs HAR, 15 assets without options | 6.69% | 4.76 |
+
+It also reproduces the symmetry-breaking measurement (paper Table 6) and the validation path
+across the pooling multiplier (paper Table 7).
+
+To regenerate every result in the paper:
+
+```bash
+python analysis_main.py           # main pipeline, 11 models, Tables 2-15
+python analysis_benchmarks.py all # time-series baselines, 1/3/7-day horizons, permutation test
+python analysis_robustness.py     # DVOL placebos, block ablations, pooled nonlinear benchmark
+```
+
+---
+
+## The model
+
+HPTS is a single ridge regression on a stacked design matrix
+
+```
+[ intercept | standardised predictors | asset dummies | asset x predictor interactions ]
+```
+
+with a different penalty on each part: `0` on the intercept, `lambda` on the common slopes,
+`0.25 * lambda` on the asset fixed effects and `lambda * p` on the asset-specific deviations.
+
+The pooling multiplier `p` is the control parameter for cross-asset symmetry breaking. As
+`p` grows the deviations shrink to zero and the model becomes exactly equivariant under
+relabelling of assets; as `p` falls the panel separates into 17 independent models. Validation
+selects an interior value, `lambda = 100` and `p = 10`.
+
+The core is `panel_design()` in `analysis_main.py` — about 25 lines.
 
 ## Locked protocol
 
-- Train: observations before 2023-01-01.
-- Hyperparameter validation: calendar 2023 only.
-- Untouched holdout: 2024-01-01 onward.
-- Forecast horizon: exact next 24 hours.
-- Target: `log(sum of squared hourly log returns)` over the target window.
-- Primary benchmark: per-asset HAR.
-- Primary loss: MSE on log realised variance.
-- Secondary loss: QLIKE on realised variance.
-- Refit cadence: 60 days.
-- Option timing: current UTC day's BTC/ETH DVOL open only.
-- Proposed model: one hierarchical ridge regression; it is not an ensemble.
-- Seed: 77 for bootstrap, stochastic competitors and permutation inference; ridge is deterministic.
+| | |
+|---|---|
+| Target | `log(sum of squared hourly log returns)` over the next exact 24 h |
+| Train | before 2023-01-01 |
+| Validation | calendar 2023 only |
+| Holdout | from 2024-01-01, untouched during development |
+| Refit cadence | 60 days |
+| Primary benchmark | per-asset HAR |
+| Primary loss | squared error on log realised variance (symmetric) |
+| Secondary loss | QLIKE on realised variance (asymmetric) |
+| Option timing | current UTC day's BTC/ETH DVOL **open** only |
+| Seed | 77 for bootstrap, stochastic competitors and permutation inference; ridge is deterministic |
 
-## Final model
+`HPTS_Final` is one hierarchical ridge regression, not an ensemble. The BTC–ETH implied-volatility
+spread is excluded because the no-spread specification had lower 2023 validation MSE.
 
-`HPTS_Final` contains common effects, asset fixed effects and regularised
-asset-specific deviations for HAR, cross-sectional, tail/path/liquidity and
-causally timed BTC/ETH option-implied predictors. The BTC--ETH IV spread is
-omitted because the no-spread specification had lower 2023 validation MSE.
+---
 
-## Run
+## Contents
 
-Create an environment and install the locked dependencies:
+| Path | What it is |
+|---|---|
+| `model_data.csv` | 31,965 model-ready asset-day observations, 17 assets, 2021-03-29 to 2026-06-29 |
+| `data_dictionary.csv` | Variable definitions and missing-value audit |
+| `HPTS_reproduce.ipynb` | Compact reproduction of the headline results |
+| `HPTS_results.xlsx` | One sheet per table in the paper |
+| `analysis_main.py` | Main pipeline |
+| `analysis_benchmarks.py` | Time-series baselines, multi-horizon targets, 1,000-draw permutation test |
+| `analysis_robustness.py` | Placebos, block ablations, pooled nonlinear benchmark |
+| `results/` | Paper tables, selected hyperparameters, holdout predictions, run metadata |
+| `results/benchmarks/` | Baseline, horizon and permutation outputs |
+| `results/robustness/` | Placebo, ablation and coefficient-summary outputs |
+| `figures/` | Figures 1–4 of the paper, 300 dpi |
 
-```bash
-python -m pip install -r requirements.txt
-python run_final_analysis.py
-python run_requested_tests.py all
+Bulk prediction dumps for the placebo, nonlinear, baseline and multi-horizon runs are not
+committed; they are regenerated by the scripts above.
+
+### Data provenance
+
+Hourly spot observations come from public Binance market-data endpoints. BTC and ETH implied
+volatility comes from Deribit's public volatility-index API
+(`https://www.deribit.com/api/v2/public/get_volatility_index_data`).
+
+`model_data.csv` SHA-256:
+
+```
+e801ea0df38a6e2784fc58677c098f89a44f734f305a451500d3ff1ccde6ccee
 ```
 
-The distributed `model_data.csv` already includes the one-, three- and seven-day
-targets used by the published analyses. If those columns are removed and must be
-rebuilt from an hourly panel, set `HPTS_RAW_PANEL` to a compatible
-`panel_hourly.parquet` file before running the horizon tests.
+The leakage audit in `results/data_and_leakage_audit.csv` confirms 31,965 rows, 17 assets,
+no missing model values, no duplicated asset-dates and no same-day DVOL close, high or low fields.
 
-The script recreates `final_results/`. The notebook contains the same pipeline
-and can be run from this directory. A complete run includes 17 leave-one-asset-
-out refits and can take several minutes.
+## Requirements
 
-`model_data.csv` also contains `y_3d` and `y_7d`, exact forward 72-hour and
-168-hour log-realised-variance targets. The longer-horizon code censors training
-origins whose target window has not ended at the refit cutoff.
+Python 3.11 with the packages pinned in `requirements.txt` (`numpy`, `pandas`, `scikit-learn`,
+`statsmodels`, `arch`, `openpyxl`, `matplotlib`). The notebook alone needs only `numpy`,
+`pandas` and `openpyxl`.
 
-## Scope of claims
+## Licence
 
-The main paper is a forecasting study. Risk-management results are not part of
-the headline contribution because paired VaR/ES loss improvements were not
-statistically decisive. Raw realised-volatility performance is reported only as
-a scale diagnostic; the primary result concerns log realised variance.
+Code and data in this repository are released under CC BY 4.0 — see `LICENSE`.

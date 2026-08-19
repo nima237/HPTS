@@ -7,12 +7,11 @@ import sys
 import warnings
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-ROOT = SCRIPT_DIR.parent
-PACKAGE = SCRIPT_DIR if (SCRIPT_DIR / "model_data.csv").exists() else ROOT / "HPTS_reproducible_package"
-OUT = PACKAGE / "requested_tests" if PACKAGE == SCRIPT_DIR else ROOT / "experiments_seed77" / "results"
+ROOT = Path(__file__).resolve().parent
+PACKAGE = ROOT
+OUT = ROOT / "results" / "benchmarks"
 os.environ.setdefault("MPLCONFIGDIR", str(OUT / ".matplotlib"))
-sys.path.insert(0, str(PACKAGE))
+sys.path.insert(0, str(ROOT))
 
 import numpy as np
 import pandas as pd
@@ -20,7 +19,7 @@ from arch import arch_model
 from scipy.stats import norm
 from statsmodels.tsa.arima.model import ARIMA
 
-import run_final_analysis as core
+import analysis_main as core
 
 warnings.filterwarnings("ignore")
 
@@ -64,7 +63,7 @@ def score(frame, model, comparator="HAR", horizon_days=1):
 
 def repeated_permutation():
     df = core.load_and_audit()
-    base = pd.read_csv(PACKAGE / "final_results" / "holdout_predictions.csv",
+    base = pd.read_csv(ROOT / "results" / "holdout_predictions.csv",
                        parse_dates=["timestamp"])
     hold = df[df.timestamp >= "2024-01-01"].copy().reset_index(drop=True)
     hold = hold.merge(base[["timestamp", "symbol", "y", "HAR", "HPTS_Final", "HPTS_NoIV"]],
@@ -254,7 +253,7 @@ def baseline_predictions():
             rows.extend(func(g.reset_index(drop=True)))
         frames[name] = pd.DataFrame(rows, columns=["timestamp", "symbol", "y_check", name])
 
-    saved = pd.read_csv(PACKAGE / "final_results" / "holdout_predictions.csv",
+    saved = pd.read_csv(ROOT / "results" / "holdout_predictions.csv",
                         parse_dates=["timestamp"])
     merged = None
     calibration_rows = []
@@ -343,7 +342,7 @@ def multihorizon():
     for days in (1, 3, 7):
         print(f"multi-horizon: {days} day(s)", flush=True)
         if days == 1:
-            pred = pd.read_csv(PACKAGE / "final_results" / "holdout_predictions.csv",
+            pred = pd.read_csv(ROOT / "results" / "holdout_predictions.csv",
                                parse_dates=["timestamp"])[
                 ["timestamp", "symbol", "y", "HAR", "HPTS_NoIV", "HPTS_Final"]]
         else:

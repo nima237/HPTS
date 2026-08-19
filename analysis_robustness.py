@@ -15,12 +15,12 @@ import pandas as pd
 from scipy.stats import norm
 from sklearn.ensemble import HistGradientBoostingRegressor
 
-import run_final_analysis as core
+import analysis_main as core
 
 warnings.filterwarnings("ignore")
 
 ROOT = Path(__file__).resolve().parent
-OUT = ROOT / "acceptance_extensions"
+OUT = ROOT / "results" / "robustness"
 FIG = OUT / "figures"
 OUT.mkdir(exist_ok=True)
 FIG.mkdir(exist_ok=True)

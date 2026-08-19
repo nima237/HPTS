@@ -22,7 +22,7 @@ warnings.filterwarnings("ignore")
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "model_data.csv"
-OUT = ROOT / "final_results"
+OUT = ROOT / "results"
 FIG = OUT / "figures"
 SEED = 77
 REFIT_DAYS = 60
@@ -522,7 +522,7 @@ The contribution is hierarchical cross-asset forecasting with incremental, causa
 implied information for assets that largely lack listed options.  The results do not justify claiming
 a new ridge estimator or decisive heterogeneous option-loading coefficients.
 """
-    (ROOT / "FINAL_RESULTS.md").write_text(report, encoding="utf-8")
+    (OUT / "summary.md").write_text(report, encoding="utf-8")
 
 
 def write_reproducibility_metadata(df: pd.DataFrame, choices: pd.DataFrame):
